@@ -2,6 +2,14 @@
  
     function methods(){
         const temp = Object.create(HTMLCollection);
+        temp.eq = function(num){
+            const el = [this[num]];
+            Object.setPrototypeOf(el, this);
+            return el;
+        };
+        temp.last = function(){
+            return this.length
+        }
         temp.bg = function(color){
            for(let key of Object.keys(this)){
                this[key].style.background = color;
@@ -20,14 +28,19 @@
         return {
             TAG     : function(tagName){
                         const el = document.getElementsByTagName(tagName);
+                        // console.log(el);
                         return el;
             },
             ID      : function(id){
-                        const el = document.getElementById(id);
+                        const el = [document.getElementById(id)];
+                        console.log(el.length);
+                        if(el.length>1){return new Error('ID should be unique')}
+                        // console.log(el);
                         return el;
             },
             CLASS   : function(className){
                         const el = document.getElementsByClassName(className);
+                        // console.log(el);
                         return el;
             }
         }
@@ -51,7 +64,7 @@
             if(q[0]==='.'){
                 return matchSelector.CLASS(q.slice(1, q.length))
             }else if(q[0]==='#'){
-                return matchSelector.ID(q.slice(1, q.length))
+                return matchSelector.ID(q.slice(1, q.length));
             }else{
                 return matchSelector.TAG(q)
             }
