@@ -94,7 +94,41 @@
             }
             animator.call(method, el.freq)
         }
+
+        //event handler
+        method.on = function(event, cb){
+            //handling
+            if(typeof cb != 'function' && typeof cb != 'object'){return}
+            //this method accepts a single callback as well as an array of functions
+            const events = returnEvents();
+            //if array
+            if(typeof cb != 'function'){
+                cb.forEach(fn=>{
+                    events.push(fn)
+                })
+            }else{
+                //else if single cb
+                events.push(cb)
+            }
+            
+            //For browsers that do not support Element.matches() or Element.matchesSelector()
+            if (!Element.prototype.matches) {
+                Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+            }
+            const el = this;
+            document.addEventListener(event, function(e){
+                events.forEach(fn=>{
+                    fn();
+                })
+            }.bind(this))
+        }
+        Object.setPrototypeOf(method, returnEvents());
         return method;
+    }
+    //end of returnMethods()
+
+    function returnEvents(){
+        return []
     }
 
     function nodeList(){
