@@ -97,18 +97,26 @@
 
         //event handler
         method.on = function(event, cb){
+            //event converter
+            function e(ev){
+                const events = {
+                    click   : 'click',
+                    hover   : 'mouseover'
+                }
+                return events[ev]
+            }
             //handling
-            if(typeof cb != 'function' && typeof cb != 'object'){return}
+            if(typeof cb != 'function' && typeof cb != 'object' && !cb.constructor === Array){return}
             //this method accepts a single callback as well as an array of functions
-            const events = returnEvents();
+            const eventsCallbacks = returnEvents();
             //if array
             if(typeof cb != 'function'){
                 cb.forEach(fn=>{
-                    events.push(fn)
+                    eventsCallbacks.push(fn)
                 })
             }else{
                 //else if single cb
-                events.push(cb)
+                eventsCallbacks.push(cb)
             }
             
             //For browsers that do not support Element.matches() or Element.matchesSelector()
@@ -116,10 +124,22 @@
                 Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
             }
             const el = this;
-            document.addEventListener(event, function(e){
-                events.forEach(fn=>{
-                    fn();
+            document.addEventListener(e(event), function(e){
+                const selection = [];
+             
+                for(let i = 0; i< el.size(); i++){
+                    selection.push(el[i])
+                }
+                const target = e.target.outerHTML;
+
+                selection.forEach(element => {
+                    if(element.outerHTML===target){
+                        eventsCallbacks.forEach(fn=>{
+                            fn();
+                        })
+                    }
                 })
+                
             }.bind(this))
         }
         Object.setPrototypeOf(method, returnEvents());
