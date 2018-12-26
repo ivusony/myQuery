@@ -12,14 +12,14 @@
 
     //adding size method to Object prototype makind object iterable
     Object.prototype.size = function(){
-        let counter = 0;
+        var counter = 0;
         for(let key in this){
             if(this.hasOwnProperty(key)){
                 counter ++;
             }
         }
-        return counter
-    }
+        return counter;
+    };
 
     //return methods
     function returnMethods(){
