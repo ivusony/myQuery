@@ -148,6 +148,64 @@
                 
             }.bind(this));
         };
+        method.animate = function(options, speed){
+            console.log(options);
+            if(this.length>1)return;
+            if(!options || typeof options != 'object')return;
+           
+            const   element         = this;
+
+            if(element[0].style.position != 'absolute')return;
+                   
+            let int = setInterval(move, 1)
+
+            function move(){
+                let elementPosition =   element[0].getBoundingClientRect(),
+                    left            =   elementPosition.left,
+                    top             =   elementPosition.top;
+
+                  
+
+                    const mover = {
+                        goRight : function(){
+                            element.css('left', left + 50 + 'px');
+                        },
+                        goLeft  : function(){
+                            element.css('left', left - 50 + 'px');
+                        },
+                        goUp    : function(){
+                            element.css('top', top - 50 + 'px');
+                        },
+                        goDown  : function(){
+                            element.css('top', top + 50 + 'px');
+                        }
+                    }
+
+                    if(left<options.left && top<options.top){
+                        mover.goRight();
+                        mover.goDown();
+                    }else{
+                        clearInterval(int)
+                    }
+
+                // if(left<options.left){
+                   
+                // }else{
+                    
+                // } 
+
+                // if(left>options.left){
+                //     element.css('left', left - 50 + 'px');
+                // }else{
+                //     clearInterval(int)
+                // }   
+                
+                // element.css('top', top + 1 + 'px');
+            }
+           
+            return 1;
+             
+        }
         Object.setPrototypeOf(method, returnEvents());
         return method;
     }
@@ -202,7 +260,8 @@
 
     //input sanitizer, determins the selector criteria
     function inputQuery(userQuery){
-
+        if(!userQuery){return inputQuery}
+        //if no trim method exists
         if(!String.prototype.trim){
             // Make sure we trim BOM and NBSP
             const rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
@@ -214,7 +273,7 @@
         
         const query = userQuery.trim();
         
-        //finding element
+        //finding element using match element function
         const elementMatched = (function(q){
             if(q[0]==='.'){
                 return matchSelector.CLASS(q.slice(1, q.length));
