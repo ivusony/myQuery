@@ -148,63 +148,40 @@
                 
             }.bind(this));
         };
-        method.animate = function(options, speed){
-            console.log(options);
-            if(this.length>1)return;
-            if(!options || typeof options != 'object')return;
-           
-            const   element         = this;
+        method.drag = function(){
+            const el = this;
+            el.forEach(el=>{
 
-            if(element[0].style.position != 'absolute')return;
-                   
-            let int = setInterval(move, 1)
-
-            function move(){
-                let elementPosition =   element[0].getBoundingClientRect(),
-                    left            =   elementPosition.left,
-                    top             =   elementPosition.top;
-
-                  
-
-                    const mover = {
-                        goRight : function(){
-                            element.css('left', left + 50 + 'px');
-                        },
-                        goLeft  : function(){
-                            element.css('left', left - 50 + 'px');
-                        },
-                        goUp    : function(){
-                            element.css('top', top - 50 + 'px');
-                        },
-                        goDown  : function(){
-                            element.css('top', top + 50 + 'px');
-                        }
-                    }
-
-                    if(left<options.left && top<options.top){
-                        mover.goRight();
-                        mover.goDown();
-                    }else{
-                        clearInterval(int)
-                    }
-
-                // if(left<options.left){
-                   
-                // }else{
-                    
-                // } 
-
-                // if(left>options.left){
-                //     element.css('left', left - 50 + 'px');
-                // }else{
-                //     clearInterval(int)
-                // }   
+                var mousePos={};
+                var offset = [0,0];
+                var isDown = false;
+                    // var button = document.getElementById('hider');
+                    el.style.position = 'absolute';
+                    el.addEventListener('mousedown', function(e){
+                        isDown = true;
+                            offset = [
+                                el.offsetLeft - e.clientX,
+                                el.offsetTop - e.clientY
+                            ];
+                    }, true);
+                    document.addEventListener('mouseup', function(e){
+                        isDown = false;
+                     }, true)
                 
-                // element.css('top', top + 1 + 'px');
-            }
+                    document.addEventListener('mousemove', function(e){
+                        e.preventDefault();
+                        if(isDown){
+                           mousePos = {
+                                x:e.clientX,
+                                y:e.clientY
+                            }
+                        };
+                        el.style.left = (mousePos.x + offset[0])+'px';
+                        el.style.top = (mousePos.y + offset[1])+'px';
+                    }, true)
+
+            }) //end of foreach
            
-            return 1;
-             
         }
         Object.setPrototypeOf(method, returnEvents());
         return method;
