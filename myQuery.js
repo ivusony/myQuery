@@ -182,6 +182,17 @@
 
             }) //end of foreach
            
+        },
+        method.addElement = function(element, attributes){
+
+            function createEl(el){
+                var elm = document.createElement(el);
+                return elm
+            }
+           
+                this[0].appendChild(createEl(element));
+                // div.className = 'newClass';
+                
         }
         Object.setPrototypeOf(method, returnEvents());
         return method;
