@@ -149,26 +149,31 @@
             }.bind(this));
         };
         method.drag = function(){
-            const el = this;
-            el.forEach(el=>{
-
+            const elm = this;
+            var z  = 1;
+            elm.forEach(el=>{
                 var mousePos={};
                 var offset = [0,0];
                 var isDown = false;
-                    // var button = document.getElementById('hider');
-                    el.style.position = 'absolute';
+
                     el.addEventListener('mousedown', function(e){
+                        el.draggable = true;
+                        el.style.position = 'absolute';
+                        this.style.zIndex = z;
+                        // current.style.zIndex = 10
                         isDown = true;
                             offset = [
                                 el.offsetLeft - e.clientX,
                                 el.offsetTop - e.clientY
                             ];
+                            z++;
                     }, true);
                     document.addEventListener('mouseup', function(e){
                         isDown = false;
                      }, true)
                 
                     document.addEventListener('mousemove', function(e){
+                       
                         e.preventDefault();
                         if(isDown){
                            mousePos = {
@@ -178,22 +183,47 @@
                         };
                         el.style.left = (mousePos.x + offset[0])+'px';
                         el.style.top = (mousePos.y + offset[1])+'px';
+
+                        
                     }, true)
-
             }) //end of foreach
-           
+           return this;
         },
-        method.addElement = function(element, attributes){
-
+        method.insert = function(element, attributes){
+            if(!attributes || typeof attributes != 'object'){
+                attributes = {
+                    class       : '',
+                    id          : '',
+                    disabled    : false
+                }
+            }
             function createEl(el){
                 var elm = document.createElement(el);
-                return elm
+                elm.className = attributes.class;
+                elm.id  = attributes.id;
+                return elm;
             }
+            const elm = createEl(element);
            
-                this[0].appendChild(createEl(element));
-                // div.className = 'newClass';
+                 this[0].appendChild(elm);
+                return elm;
                 
+        },
+        method.addClass = function(className){
+            this.forEach(el=>{
+                el.className += ' ' + className
+            })
+            return this;
+        },
+        method.removeClass = function(className){
+            this.forEach(el=>{
+                let currentClasses = el.className;
+                let newClasses = currentClasses.replace(className, '');
+                el.className = newClasses;
+            })
+            return this;
         }
+
         Object.setPrototypeOf(method, returnEvents());
         return method;
     }
