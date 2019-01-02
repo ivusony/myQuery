@@ -157,7 +157,6 @@
                 var isDown = false;
 
                     el.addEventListener('mousedown', function(e){
-                        el.draggable = true;
                         el.style.position = 'absolute';
                         this.style.zIndex = z;
                         // current.style.zIndex = 10
