@@ -221,7 +221,11 @@
                 el.className = newClasses;
             })
             return this;
-        }
+        },
+
+
+
+       
 
         Object.setPrototypeOf(method, returnEvents());
         return method;
@@ -237,12 +241,14 @@
         return body;
     }
 
-    //selector function. Gets the selected elements, pushes them into array and returns the array
-    const matchSelector = (function(){
+
+
+    //selector function. Gets the selected elements, pushes them into array and returns the array to the inputQuery function
+    const returnDomElement = (function(){
         //htmlcollection object to array object convertor
         function html2Arr(htmlcollection){
             const newArray = [];
-            //using for instead of for..in. For..in iterates through obj prototype
+            //using for instead of for..in. For..in iterates through obj prototype, for iterates only the selected object
             for(let i = 0; i< htmlcollection.size(); i++){
                 newArray.push(htmlcollection[i]);
             }
@@ -264,7 +270,7 @@
             },
             CLASS   : function(className){
                         const el = document.getElementsByClassName(className);
-                        //returning array obj instead of htmlcollection object
+                        //returning Nodelist array obj instead of htmlcollection object
                         const ElementsArray = html2Arr(el);
                         return ElementsArray;
             },
@@ -275,10 +281,13 @@
         };
     })();
 
-    //input sanitizer, determins the selector criteria
+    //inputQuery function which returns the selected element based on class/ID/name/tag. 
     function inputQuery(userQuery){
+        //return the function itself if nothing is passed
         if(!userQuery){return inputQuery}
-        //if no trim method exists
+
+        
+        //if no trim method exists add one to the prototype of the String object
         if(!String.prototype.trim){
             // Make sure we trim BOM and NBSP
             const rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
@@ -287,38 +296,39 @@
                 return this.replace(rtrim, '');
             };
         }
-        
+        //else trim the input query
         const query = userQuery.trim();
         
-        //finding element using match element function
+        //finding element using match element iife function
         const elementMatched = (function(q){
+            //for selectors based on class
             if(q[0]==='.'){
-                return matchSelector.CLASS(q.slice(1, q.length));
+                //calling the
+                return returnDomElement.CLASS(q.slice(1, q.length));
+
+            //for selectors based on ID
             }else if(q[0]==='#'){
-                return matchSelector.ID(q.slice(1, q.length));
+                return returnDomElement.ID(q.slice(1, q.length));
+
+            //for selectors based on name    
             }else if(q[0]==='*'){
-                return matchSelector.NAME(q.slice(1, q.length));
+                return returnDomElement.NAME(q.slice(1, q.length));
             }else{
-                return matchSelector.TAG(q);
+
+            //for selectors based on tag name
+                return returnDomElement.TAG(q);
             }
-        })(query); 
+        })(query); //passing the sanitized input query to the elementMatched function which returns the actual DOM element(s) if found
           
-        if(!elementMatched){
+        if(!elementMatched || elementMatched.length===0){
             //if nothing found
             return new Error('No element found');
         }else{
+            // console.log('hit2');
             //returning element found
             return elementMatched;
         }
     } 
-
-    // //get element
-    // function matchElement(query, fn){
-    //     const selector = fn(); //the matchSelector function returning selector object
-    //     const el = selector.ID(query);
-    //     return el;
-    // }
-
 
 
     function factory(query){
